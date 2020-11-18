@@ -9,11 +9,16 @@ import UIKit
 
 class TodoListTVC: UITableViewController {
     
-    let itemArray = ["Eleven","Mike","Dustin","Lucas","Nancy","Steve","Max","Will","Jim Hopper","Joyce Byers","Jonathan","Barbie","Demogorgon"]
+    var itemArray = ["Eleven","Mike","Dustin","Lucas","Nancy","Steve","Max","Will","Jim Hopper","Joyce Byers","Jonathan","Barbie","Demogorgon"]
+    
+    let userDefaults = UserDefaults.standard
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        if let items = userDefaults.array(forKey: "TodoListArray") as? [String] {
+            itemArray = items
+        }
         
     }
 
@@ -34,7 +39,7 @@ class TodoListTVC: UITableViewController {
     
     //MARK: - Table view Delegate
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //print(itemArray[indexPath.row])
+        
         
         
         if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
@@ -50,9 +55,21 @@ class TodoListTVC: UITableViewController {
     
     @IBAction func addBtnPressed(_ sender: UIBarButtonItem) {
         
+        var textField = UITextField()
+        
         let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
-            print("actin pressed")
+            //fazer uma verificação para textField vazia
+            self.itemArray.append(textField.text!)
+            
+            self.userDefaults.set(self.itemArray, forKey: "TodoListArray")
+            
+            self.tableView.reloadData()
+        }
+        alert.addTextField { (alertTxtField) in
+            alertTxtField.placeholder = "Create new item"
+            textField = alertTxtField
+            
         }
         alert.addAction(action)
         present(alert, animated: true, completion: nil)
